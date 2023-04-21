@@ -59,5 +59,6 @@ sonar {
 		property("sonar.host.url", "https://sonarcloud.io")
 		property("sonar.organization", "io-jonathanlee")
 		property("sonar.projectKey", "io-jonathanlee_sparrow-express-api")
+		property("sonar.exclusions", "**/*Config.java,**/*Model.java,**/*Dto.java")
 	}
 }
