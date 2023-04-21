@@ -1,5 +1,7 @@
 plugins {
 	java
+	jacoco
+	id("org.sonarqube") version "3.5.0.2730"
 	id("org.springframework.boot") version "3.0.5"
 	id("io.spring.dependency-management") version "1.1.0"
 }
@@ -31,4 +33,21 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+}
+
+tasks.bootBuildImage {
+	setProperty("imageName", "jonathanleedev/sparrow-express-api")
+}
+
+sonar {
+	properties {
+		property("sonar.host.url", "https://sonarcloud.io")
+		property("sonar.organization", "io-jonathanlee")
+		property("sonar.projectKey", "io-jonathanlee_sparrow-express-api")
+	}
 }
