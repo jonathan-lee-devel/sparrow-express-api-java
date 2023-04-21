@@ -38,6 +38,16 @@ tasks.withType<Test> {
 
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
+	reports {
+		xml.required
+		xml.isEnabled = true
+	}
+	sourceDirectories.setFrom(files(project.projectDir))
+	executionData.setFrom(
+			fileTree(project.projectDir) {
+				setIncludes(setOf("**/**/*.exec", "**/**/*.ec"))
+			}
+	)
 }
 
 tasks.bootBuildImage {
