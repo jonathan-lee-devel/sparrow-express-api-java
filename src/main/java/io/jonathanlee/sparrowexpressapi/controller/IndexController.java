@@ -2,6 +2,7 @@ package io.jonathanlee.sparrowexpressapi.controller;
 
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +16,12 @@ public class IndexController {
 
   private static final String NAME_ATTRIBUTE = "name";
 
-  @GetMapping
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> index(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
     String name = Objects.requireNonNull(oAuth2AuthenticationToken.getPrincipal().getAttributes().get(NAME_ATTRIBUTE))
         .toString();
     return ResponseEntity.ok(
-        String.format("Hello %s", name)
+        String.format("{ \"greeting\": \"Hello %s\" }", name)
     );
   }
 
