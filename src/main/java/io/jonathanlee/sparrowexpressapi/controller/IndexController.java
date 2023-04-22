@@ -1,7 +1,5 @@
 package io.jonathanlee.sparrowexpressapi.controller;
 
-import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,21 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/")
 public class IndexController {
 
   private static final String NAME_ATTRIBUTE = "name";
-
-  private final RandomService randomService;
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> index(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
     if (oAuth2AuthenticationToken == null || oAuth2AuthenticationToken.getPrincipal() == null || oAuth2AuthenticationToken.getPrincipal().getAttributes().get(NAME_ATTRIBUTE) == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-
-    log.info("ID: {}\nToken: {}", this.randomService.generateNewId(), this.randomService.generateNewTokenValue());
 
     String name = oAuth2AuthenticationToken.getPrincipal().getAttributes().get(NAME_ATTRIBUTE).toString();
     return ResponseEntity.ok(
