@@ -1,63 +1,105 @@
 package io.jonathanlee.sparrowexpressapi.service.product.impl;
 
-import io.jonathanlee.sparrowexpressapi.dto.product.ProductDto;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import io.jonathanlee.sparrowexpressapi.dto.product.ProductRequestDto;
+import io.jonathanlee.sparrowexpressapi.dto.product.ProductResponseDto;
 import io.jonathanlee.sparrowexpressapi.mapper.product.ProductMapper;
 import io.jonathanlee.sparrowexpressapi.model.product.ProductModel;
 import io.jonathanlee.sparrowexpressapi.repository.product.ProductRepository;
 import io.jonathanlee.sparrowexpressapi.service.product.ProductService;
-import org.junit.jupiter.api.Assertions;
+import java.math.BigDecimal;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import java.util.Optional;
 
 class ProductServiceImplTest {
 
+  private ProductRepository productRepository;
+  private ProductMapper productMapper;
   private ProductService productService;
 
-  @Mock
-  private ProductRepository productRepository;
-
-  @Mock
-  private ProductMapper productMapper;
-
   @BeforeEach
-  void setup() {
-    MockitoAnnotations.openMocks(this);
+  void setUp() {
+    productRepository = mock(ProductRepository.class);
+    productMapper = mock(ProductMapper.class);
     productService = new ProductServiceImpl(productRepository, productMapper);
   }
 
   @Test
-  void getProductById_productFound_shouldReturnProductDto() {
+  void getProductById_returnsEmptyOptional_whenProductNotFound() {
     // Arrange
-    String id = "123";
-    ProductModel productModel = new ProductModel();
-    productModel.setId(id);
-    Mockito.when(productRepository.findById(id)).thenReturn(Optional.of(productModel));
-    ProductDto productDto = new ProductDto();
-    productDto.setId(id);
-    Mockito.when(productMapper.productModelToProductDto(productModel)).thenReturn(productDto);
+    String productId = "non-existent-id";
+    when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
     // Act
-    Optional<ProductDto> result = productService.getProductById(id);
+    Optional<ProductResponseDto> result = productService.getProductById(productId);
 
     // Assert
-    Assertions.assertTrue(result.isPresent());
-    Assertions.assertEquals(id, result.get().getId());
+    assertTrue(result.isEmpty());
+    verify(productRepository).findById(productId);
+    verifyNoInteractions(productMapper);
   }
 
   @Test
-  void getProductById_productNotFound_shouldReturnEmptyOptional() {
+  void getProductById_returnsProductResponseDto_whenProductFound() {
     // Arrange
-    String id = "123";
-    Mockito.when(productRepository.findById(id)).thenReturn(Optional.empty());
+    String productId = "existing-id";
+    ProductModel productModel = new ProductModel();
+    ProductResponseDto expectedResponseDto = new ProductResponseDto();
+    when(productRepository.findById(productId)).thenReturn(Optional.of(productModel));
+    when(productMapper.productModelToProductResponseDto(productModel)).thenReturn(expectedResponseDto);
 
     // Act
-    Optional<ProductDto> result = productService.getProductById(id);
+    Optional<ProductResponseDto> result = productService.getProductById(productId);
 
     // Assert
-    Assertions.assertTrue(result.isEmpty());
+    assertTrue(result.isPresent());
+    assertEquals(expectedResponseDto, result.get());
+    verify(productRepository).findById(productId);
+    verify(productMapper).productModelToProductResponseDto(productModel);
   }
+
+  @Test
+  void createProduct_returnsEmptyOptional_whenProductRequestDtoIsNull() {
+    // Act
+    Optional<ProductResponseDto> result = productService.createProduct(null);
+
+    // Assert
+    assertTrue(result.isEmpty());
+    verifyNoInteractions(productRepository, productMapper);
+  }
+
+  @Test
+  void createProduct_returnsProductResponseDto_whenProductRequestDtoIsValid() {
+    // Arrange
+    ProductRequestDto productRequestDto = new ProductRequestDto();
+    productRequestDto.setCreatorEmail("test@test.com");
+    productRequestDto.setOrganizationId("5678");
+    productRequestDto.setTitle("Test product");
+    productRequestDto.setPrice(BigDecimal.TEN);
+    ProductModel productModel = new ProductModel();
+    ProductResponseDto expectedResponseDto = new ProductResponseDto();
+    when(productMapper.productRequestDtoToProductModel(productRequestDto)).thenReturn(productModel);
+    when(productRepository.save(productModel)).thenReturn(productModel);
+    when(productMapper.productModelToProductResponseDto(productModel)).thenReturn(expectedResponseDto);
+
+    // Act
+    Optional<ProductResponseDto> result = productService.createProduct(productRequestDto);
+
+    // Assert
+    assertTrue(result.isPresent());
+    assertEquals(expectedResponseDto, result.get());
+    assertNotNull(productModel.getObjectId());
+    verify(productMapper).productRequestDtoToProductModel(productRequestDto);
+    verify(productRepository).save(productModel);
+    verify(productMapper).productModelToProductResponseDto(productModel);
+  }
+
 }
