@@ -1,6 +1,6 @@
 package io.jonathanlee.sparrowexpressapi.constraint;
 
-public class CommonConstraints {
+public abstract class CommonConstraints {
 
   public static final int ID_LENGTH = 32;
 

@@ -1,6 +1,6 @@
 package io.jonathanlee.sparrowexpressapi.constraint.product;
 
-public class ProductConstraints {
+public abstract class ProductConstraints {
 
   public static final int MIN_TITLE_LENGTH = 1;
 
