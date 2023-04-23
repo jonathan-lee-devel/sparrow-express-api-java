@@ -26,8 +26,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.mapstruct:mapstruct:1.5.4.Final")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
+	compileOnly("org.mapstruct:mapstruct-processor:1.5.4.Final")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.4.Final")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }

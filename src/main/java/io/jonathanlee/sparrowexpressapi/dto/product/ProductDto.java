@@ -1,4 +1,4 @@
-package io.jonathanlee.sparrowexpressapi.dto.model;
+package io.jonathanlee.sparrowexpressapi.dto.product;
 
 import io.jonathanlee.sparrowexpressapi.constraint.CommonConstraints;
 import io.jonathanlee.sparrowexpressapi.constraint.product.ProductConstraints;

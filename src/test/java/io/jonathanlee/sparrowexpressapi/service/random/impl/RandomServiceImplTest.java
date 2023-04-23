@@ -1,7 +1,6 @@
-package io.jonathanlee.sparrowexpressapi.random.impl;
+package io.jonathanlee.sparrowexpressapi.service.random.impl;
 
 import io.jonathanlee.sparrowexpressapi.constraint.CommonConstraints;
-import io.jonathanlee.sparrowexpressapi.service.random.impl.RandomServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
