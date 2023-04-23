@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class IndexController {
 
-  private static final String NAME_ATTRIBUTE = "name";
+  public static final String NAME_ATTRIBUTE = "name";
+
+  public static final String EMAIL_ATTRIBUTE = "email";
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> index(OAuth2AuthenticationToken oAuth2AuthenticationToken) {

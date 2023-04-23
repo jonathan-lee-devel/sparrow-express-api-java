@@ -2,7 +2,6 @@ package io.jonathanlee.sparrowexpressapi.dto.product;
 
 import io.jonathanlee.sparrowexpressapi.constraint.CommonConstraints;
 import io.jonathanlee.sparrowexpressapi.constraint.product.ProductConstraints;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -14,10 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductRequestDto {
-
-  @Email
-  @NotNull
-  private String creatorEmail;
 
   @Size(
       min = CommonConstraints.ID_LENGTH,

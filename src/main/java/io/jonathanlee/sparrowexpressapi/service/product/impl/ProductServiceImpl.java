@@ -26,11 +26,9 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Optional<ProductResponseDto> createProduct(ProductRequestDto productRequestDto) {
-    if (productRequestDto == null) {
-      return Optional.empty();
-    }
+  public Optional<ProductResponseDto> createProduct(String requestingUserEmail, ProductRequestDto productRequestDto) {
     ProductModel productModel = this.productMapper.productRequestDtoToProductModel(productRequestDto);
+    productModel.setCreatorEmail(requestingUserEmail);
     productModel.setObjectId(ObjectId.get());
     return Optional.of(this.productMapper.productModelToProductResponseDto(this.productRepository.save(productModel)));
   }

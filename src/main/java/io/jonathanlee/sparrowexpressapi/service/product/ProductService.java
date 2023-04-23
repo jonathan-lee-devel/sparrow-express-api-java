@@ -8,6 +8,6 @@ public interface ProductService {
 
   Optional<ProductResponseDto> getProductById(String productId);
 
-  Optional<ProductResponseDto> createProduct(ProductRequestDto productRequestDto);
+  Optional<ProductResponseDto> createProduct(String requestingUserEmail, ProductRequestDto productRequestDto);
 
 }
