@@ -10,6 +10,9 @@ public abstract class OAuth2ClientUtils {
   public static final String DEFAULT_LOCAL_EMAIL = "test@example.com";
 
   public static String getEmailAttributeFromOAuth2AuthenticationToken(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+    if (oAuth2AuthenticationToken == null || oAuth2AuthenticationToken.getPrincipal() == null) {
+      return null;
+    }
     return oAuth2AuthenticationToken.getPrincipal().getAttributes().get(EMAIL_ATTRIBUTE).toString();
   }
 
