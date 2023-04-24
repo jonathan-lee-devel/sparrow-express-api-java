@@ -6,6 +6,7 @@ import io.jonathanlee.sparrowexpressapi.mapper.product.ProductMapper;
 import io.jonathanlee.sparrowexpressapi.model.product.ProductModel;
 import io.jonathanlee.sparrowexpressapi.repository.product.ProductRepository;
 import io.jonathanlee.sparrowexpressapi.service.product.ProductService;
+import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -19,6 +20,8 @@ public class ProductServiceImpl implements ProductService {
 
   private final ProductMapper productMapper;
 
+  private final RandomService randomService;
+
   @Override
   public Optional<ProductResponseDto> getProductById(String productId) {
     Optional<ProductModel> productModelOptional = this.productRepository.findById(productId);
@@ -28,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Optional<ProductResponseDto> createProduct(String requestingUserEmail, ProductRequestDto productRequestDto) {
     ProductModel productModel = this.productMapper.productRequestDtoToProductModel(productRequestDto);
+    productModel.setId(this.randomService.generateNewId());
     productModel.setCreatorEmail(requestingUserEmail);
     productModel.setObjectId(ObjectId.get());
     return Optional.of(this.productMapper.productModelToProductResponseDto(this.productRepository.save(productModel)));

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import io.jonathanlee.sparrowexpressapi.dto.product.ProductRequestDto;
 import io.jonathanlee.sparrowexpressapi.dto.product.ProductResponseDto;
 import io.jonathanlee.sparrowexpressapi.service.product.ProductService;
+import io.jonathanlee.sparrowexpressapi.util.profile.ActiveProfileService;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
@@ -62,9 +63,12 @@ class ProductControllerTest {
   @Mock
   private ProductService productService;
 
+  @Mock
+  private ActiveProfileService activeProfileService;
+
   @BeforeEach
   void setUp() {
-    this.productController = new ProductController(productService);
+    this.productController = new ProductController(activeProfileService, productService);
   }
 
     @Test

@@ -5,6 +5,7 @@ import io.jonathanlee.sparrowexpressapi.dto.product.ProductResponseDto;
 import io.jonathanlee.sparrowexpressapi.mapper.product.ProductMapper;
 import io.jonathanlee.sparrowexpressapi.model.product.ProductModel;
 import io.jonathanlee.sparrowexpressapi.repository.product.ProductRepository;
+import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +27,13 @@ class ProductServiceImplTest {
   @Mock
   private ProductMapper productMapper;
 
+  @Mock
+  private RandomService randomService;
+
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
-    this.productService = new ProductServiceImpl(productRepository, productMapper);
+    this.productService = new ProductServiceImpl(productRepository, productMapper, randomService);
   }
 
   @Test

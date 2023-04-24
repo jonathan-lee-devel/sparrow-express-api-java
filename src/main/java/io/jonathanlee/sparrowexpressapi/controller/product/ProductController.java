@@ -1,10 +1,12 @@
 package io.jonathanlee.sparrowexpressapi.controller.product;
 
-import static io.jonathanlee.sparrowexpressapi.util.oauth2.OAuth2ClientUtils.EMAIL_ATTRIBUTE;
+import static io.jonathanlee.sparrowexpressapi.util.oauth2.OAuth2ClientUtils.getEmailAttributeFromOAuth2AuthenticationToken;
 
 import io.jonathanlee.sparrowexpressapi.dto.product.ProductRequestDto;
 import io.jonathanlee.sparrowexpressapi.dto.product.ProductResponseDto;
 import io.jonathanlee.sparrowexpressapi.service.product.ProductService;
+import io.jonathanlee.sparrowexpressapi.util.oauth2.OAuth2ClientUtils;
+import io.jonathanlee.sparrowexpressapi.util.profile.ActiveProfileService;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
+
+  private final ActiveProfileService activeProfileService;
 
   private final ProductService productService;
 
@@ -44,10 +48,11 @@ public class ProductController {
       OAuth2AuthenticationToken oAuth2AuthenticationToken,
       @Valid @RequestBody ProductRequestDto productRequestDto
   ) {
-    if (oAuth2AuthenticationToken == null || oAuth2AuthenticationToken.getPrincipal() == null || oAuth2AuthenticationToken.getPrincipal().getAttributes().get(EMAIL_ATTRIBUTE) == null) {
+    boolean isNoAuthentication = OAuth2ClientUtils.isNoAuthentication(oAuth2AuthenticationToken);
+    if (isNoAuthentication && !this.activeProfileService.isLocalActiveProfile()) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    Optional<ProductResponseDto> productResponseDtoOptional = this.productService.createProduct(oAuth2AuthenticationToken.getPrincipal().getAttributes().get(EMAIL_ATTRIBUTE).toString(), productRequestDto);
+    Optional<ProductResponseDto> productResponseDtoOptional = this.productService.createProduct((isNoAuthentication) ? OAuth2ClientUtils.DEFAULT_LOCAL_EMAIL : getEmailAttributeFromOAuth2AuthenticationToken(oAuth2AuthenticationToken), productRequestDto);
     return productResponseDtoOptional.map(ResponseEntity.status(HttpStatus.CREATED)::body)
         .orElseGet(() -> ResponseEntity.internalServerError().build());
   }
