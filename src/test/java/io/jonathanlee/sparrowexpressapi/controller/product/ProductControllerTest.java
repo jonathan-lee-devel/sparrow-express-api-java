@@ -1,6 +1,6 @@
 package io.jonathanlee.sparrowexpressapi.controller.product;
 
-import static io.jonathanlee.sparrowexpressapi.controller.IndexController.EMAIL_ATTRIBUTE;
+import static io.jonathanlee.sparrowexpressapi.util.oauth2.OAuth2ClientUtils.EMAIL_ATTRIBUTE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

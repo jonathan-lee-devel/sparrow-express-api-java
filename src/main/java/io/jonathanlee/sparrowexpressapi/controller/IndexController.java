@@ -1,5 +1,7 @@
 package io.jonathanlee.sparrowexpressapi.controller;
 
+import static io.jonathanlee.sparrowexpressapi.util.oauth2.OAuth2ClientUtils.NAME_ATTRIBUTE;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,10 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class IndexController {
-
-  public static final String NAME_ATTRIBUTE = "name";
-
-  public static final String EMAIL_ATTRIBUTE = "email";
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> index(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
