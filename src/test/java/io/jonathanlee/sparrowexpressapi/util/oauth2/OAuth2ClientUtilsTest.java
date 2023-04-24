@@ -11,7 +11,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -21,6 +25,15 @@ class OAuth2ClientUtilsTest {
 
   private final String TEST_EMAIL = "test@example.com";
   private final String TEST_NAME = "Test User";
+
+  @Mock
+  private OAuth2AuthenticationToken oAuth2AuthenticationToken;
+
+  @BeforeEach
+  public void setup() {
+    MockitoAnnotations.openMocks(this);
+  }
+
 
   @Test
   void testGetEmailAttributeFromOAuth2AuthenticationToken() {
@@ -41,6 +54,12 @@ class OAuth2ClientUtilsTest {
   void testGetEmailAttributeFromOAuth2AuthenticationToken_nullToken() {
     String email = OAuth2ClientUtils.getEmailAttributeFromOAuth2AuthenticationToken(null);
     assertNull(email);
+  }
+
+  @Test
+  void testGetEmailAttributeFromOAuth2AuthenticationToken_nullPrincipal() {
+    Mockito.when(oAuth2AuthenticationToken.getPrincipal()).thenReturn(null);
+    assertNull(OAuth2ClientUtils.getEmailAttributeFromOAuth2AuthenticationToken(oAuth2AuthenticationToken));
   }
 
   @Test

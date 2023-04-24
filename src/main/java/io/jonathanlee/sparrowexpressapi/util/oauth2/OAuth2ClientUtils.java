@@ -7,6 +7,7 @@ public abstract class OAuth2ClientUtils {
   public static final String NAME_ATTRIBUTE = "name";
 
   public static final String EMAIL_ATTRIBUTE = "email";
+
   public static final String DEFAULT_LOCAL_EMAIL = "test@example.com";
 
   public static String getEmailAttributeFromOAuth2AuthenticationToken(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
