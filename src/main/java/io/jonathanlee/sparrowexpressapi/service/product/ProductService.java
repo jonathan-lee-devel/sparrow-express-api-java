@@ -10,4 +10,6 @@ public interface ProductService {
 
   Optional<ProductResponseDto> createProduct(String requestingUserEmail, ProductRequestDto productRequestDto);
 
+  Optional<ProductResponseDto> updateProduct(String requestingUserEmail, String productId, ProductRequestDto productRequestDto);
+
 }

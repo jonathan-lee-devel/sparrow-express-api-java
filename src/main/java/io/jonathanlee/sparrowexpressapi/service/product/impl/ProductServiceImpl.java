@@ -10,6 +10,7 @@ import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +26,12 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public Optional<ProductResponseDto> getProductById(String productId) {
     Optional<ProductModel> productModelOptional = this.productRepository.findById(productId);
-    return productModelOptional.map(this.productMapper::productModelToProductResponseDto);
+    if (productModelOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    ProductResponseDto productResponseDto = this.productMapper.productModelToProductResponseDto(productModelOptional.get());
+    productResponseDto.setHttpStatus(HttpStatus.OK);
+    return Optional.of(productResponseDto);
   }
 
   @Override
@@ -34,7 +40,25 @@ public class ProductServiceImpl implements ProductService {
     productModel.setId(this.randomService.generateNewId());
     productModel.setCreatorEmail(requestingUserEmail);
     productModel.setObjectId(ObjectId.get());
-    return Optional.of(this.productMapper.productModelToProductResponseDto(this.productRepository.save(productModel)));
+    ProductResponseDto productResponseDto = this.productMapper.productModelToProductResponseDto(this.productRepository.save(productModel));
+    productResponseDto.setHttpStatus(HttpStatus.CREATED);
+    return Optional.of(productResponseDto);
+  }
+
+  @Override
+  public Optional<ProductResponseDto> updateProduct(String requestingUserEmail,
+      String productId,
+      ProductRequestDto productRequestDto) {
+    Optional<ProductModel> productModelOptional = this.productRepository.findById(productId);
+    if (productModelOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    ProductModel productModel = productModelOptional.get();
+    productModel.setTitle(productRequestDto.getTitle());
+    productModel.setPrice(productRequestDto.getPrice());
+    ProductResponseDto responseDto = this.productMapper.productModelToProductResponseDto(this.productRepository.save(productModel));
+    responseDto.setHttpStatus(HttpStatus.NO_CONTENT);
+    return Optional.of(responseDto);
   }
 
 }

@@ -2,18 +2,21 @@ package io.jonathanlee.sparrowexpressapi.dto.product;
 
 import io.jonathanlee.sparrowexpressapi.constraint.CommonConstraints;
 import io.jonathanlee.sparrowexpressapi.constraint.product.ProductConstraints;
+import io.jonathanlee.sparrowexpressapi.dto.ResponseDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductResponseDto {
+@EqualsAndHashCode(callSuper = true)
+public class ProductResponseDto extends ResponseDto {
 
   @Size(
       min = CommonConstraints.ID_LENGTH,
