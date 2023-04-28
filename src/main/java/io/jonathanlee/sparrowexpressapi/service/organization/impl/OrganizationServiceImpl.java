@@ -7,7 +7,7 @@ import io.jonathanlee.sparrowexpressapi.model.organization.OrganizationModel;
 import io.jonathanlee.sparrowexpressapi.repository.organization.OrganizationRepository;
 import io.jonathanlee.sparrowexpressapi.service.organization.OrganizationService;
 import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
-import java.util.ArrayList;
+import io.jonathanlee.sparrowexpressapi.util.ListUtil;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +44,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   @Override
-  public Optional<OrganizationResponseDto> createOrganization(String requestingUserEmail,
-      OrganizationRequestDto organizationRequestDto) {
+  public Optional<OrganizationResponseDto> createOrganization(String requestingUserEmail, OrganizationRequestDto organizationRequestDto) {
     OrganizationModel organizationModel = this.organizationMapper.organizationRequestDtoToOrganizationModel(organizationRequestDto);
     organizationModel.setId(this.randomService.generateNewId());
     organizationModel.setAdministratorEmails(List.of(requestingUserEmail));
@@ -56,8 +55,11 @@ public class OrganizationServiceImpl implements OrganizationService {
   }
 
   @Override
-  public Optional<OrganizationResponseDto> updateOrganization(String requestingUserEmail,
-      String organizationId, OrganizationRequestDto organizationRequestDto) {
+  public Optional<OrganizationResponseDto> updateOrganization(
+      String requestingUserEmail,
+      String organizationId,
+      OrganizationRequestDto organizationRequestDto
+  ) {
     Optional<OrganizationModel> organizationModelOptional = this.organizationRepository.findById(organizationId);
     if (organizationModelOptional.isEmpty()) {
       return Optional.empty();
@@ -69,12 +71,8 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     organizationModel.setName(organizationRequestDto.getName());
-    List<String> distinctAdministratorEmails = new ArrayList<>();
-    organizationRequestDto.getAdministratorEmails().parallelStream().distinct().forEach(distinctAdministratorEmails::add);
-    organizationModel.setAdministratorEmails(distinctAdministratorEmails);
-    List<String> distinctMemberEmails = new ArrayList<>();
-    organizationRequestDto.getMemberEmails().parallelStream().distinct().forEach(distinctMemberEmails::add);
-    organizationModel.setMemberEmails(distinctMemberEmails);
+    organizationModel.setAdministratorEmails(ListUtil.removeDuplicatesFromList(organizationModel.getAdministratorEmails()));
+    organizationModel.setMemberEmails(ListUtil.removeDuplicatesFromList(organizationModel.getMemberEmails()));
     organizationResponseDto.setHttpStatus(HttpStatus.NO_CONTENT);
     return Optional.of(organizationResponseDto);
   }
