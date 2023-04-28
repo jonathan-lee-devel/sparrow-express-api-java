@@ -15,7 +15,7 @@ class ListUtilTest {
     List<String> expectedList = new ArrayList<>(Arrays.asList("apple", "banana", "cherry"));
 
     List<String> result = ListUtil.removeDuplicatesFromList(inputList);
-    Collections.sort(result);// Parallel stream used doesn't guarantee order
+    Collections.sort(result);
 
     Assertions.assertTrue(result.containsAll(expectedList));
     Assertions.assertEquals(expectedList, result);
