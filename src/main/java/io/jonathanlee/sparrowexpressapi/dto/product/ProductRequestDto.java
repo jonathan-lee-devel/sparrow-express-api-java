@@ -1,7 +1,6 @@
 package io.jonathanlee.sparrowexpressapi.dto.product;
 
 import io.jonathanlee.sparrowexpressapi.constraint.CommonConstraints;
-import io.jonathanlee.sparrowexpressapi.constraint.product.ProductConstraints;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -22,8 +21,8 @@ public class ProductRequestDto {
   private String organizationId;
 
   @Size(
-      min = ProductConstraints.MIN_TITLE_LENGTH,
-      max = ProductConstraints.MAX_TITLE_LENGTH
+      min = CommonConstraints.MIN_TITLE_LENGTH,
+      max = CommonConstraints.MAX_TITLE_LENGTH
   )
   @NotNull
   private String title;

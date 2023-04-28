@@ -1,7 +1,6 @@
 package io.jonathanlee.sparrowexpressapi.dto.product;
 
 import io.jonathanlee.sparrowexpressapi.constraint.CommonConstraints;
-import io.jonathanlee.sparrowexpressapi.constraint.product.ProductConstraints;
 import io.jonathanlee.sparrowexpressapi.dto.ResponseDto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -37,8 +36,8 @@ public class ProductResponseDto extends ResponseDto {
   private String organizationId;
 
   @Size(
-      min = ProductConstraints.MIN_TITLE_LENGTH,
-      max = ProductConstraints.MAX_TITLE_LENGTH
+      min = CommonConstraints.MIN_TITLE_LENGTH,
+      max = CommonConstraints.MAX_TITLE_LENGTH
   )
   @NotNull
   private String title;

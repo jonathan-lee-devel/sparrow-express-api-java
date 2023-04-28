@@ -8,7 +8,6 @@ import io.jonathanlee.sparrowexpressapi.repository.organization.OrganizationRepo
 import io.jonathanlee.sparrowexpressapi.service.organization.OrganizationService;
 import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
 import io.jonathanlee.sparrowexpressapi.util.ListUtil;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -33,8 +32,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
     OrganizationModel organizationModel = organizationModelOptional.get();
     OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
-    if (!organizationModel.getAdministratorEmails().contains(requestingUserEmail) &&
-        !organizationModel.getMemberEmails().contains(requestingUserEmail)) {
+    if (!isOrganizationAdministrator(organizationModel, requestingUserEmail) && !isOrganizationMember(organizationModel, requestingUserEmail)) {
       organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
       return Optional.of(organizationResponseDto);
     }
@@ -47,9 +45,15 @@ public class OrganizationServiceImpl implements OrganizationService {
   public Optional<OrganizationResponseDto> createOrganization(String requestingUserEmail, OrganizationRequestDto organizationRequestDto) {
     OrganizationModel organizationModel = this.organizationMapper.organizationRequestDtoToOrganizationModel(organizationRequestDto);
     organizationModel.setId(this.randomService.generateNewId());
-    organizationModel.setAdministratorEmails(List.of(requestingUserEmail));
+    organizationModel.setAdministratorEmails(ListUtil.removeDuplicatesFromList(organizationModel.getAdministratorEmails()));
+    organizationModel.setMemberEmails(ListUtil.removeDuplicatesFromList(organizationModel.getMemberEmails()));
+    if (!organizationModel.getAdministratorEmails().contains(requestingUserEmail)) {
+      organizationModel.getAdministratorEmails().add(requestingUserEmail);// Ensure the creator has administrative privileges
+    }
     organizationModel.setObjectId(ObjectId.get());
-    OrganizationResponseDto organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(organizationModel);
+    OrganizationResponseDto organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
+        this.organizationRepository.save(organizationModel)
+    );
     organizationResponseDto.setHttpStatus(HttpStatus.CREATED);
     return Optional.of(organizationResponseDto);
   }
@@ -66,7 +70,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
     OrganizationModel organizationModel = organizationModelOptional.get();
     OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
-    if (!organizationModel.getAdministratorEmails().contains(requestingUserEmail)) {
+    if (isOrganizationAdministrator(organizationModel, requestingUserEmail)) {
       organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
       return Optional.of(organizationResponseDto);
     }
@@ -75,6 +79,14 @@ public class OrganizationServiceImpl implements OrganizationService {
     organizationModel.setMemberEmails(ListUtil.removeDuplicatesFromList(organizationModel.getMemberEmails()));
     organizationResponseDto.setHttpStatus(HttpStatus.NO_CONTENT);
     return Optional.of(organizationResponseDto);
+  }
+
+  private boolean isOrganizationAdministrator(OrganizationModel organizationModel, String requestingUserEmail) {
+    return organizationModel.getAdministratorEmails().contains(requestingUserEmail);
+  }
+
+  private boolean isOrganizationMember(OrganizationModel organizationModel, String requestingUserEmail) {
+    return organizationModel.getMemberEmails().contains(requestingUserEmail);
   }
 
 }
