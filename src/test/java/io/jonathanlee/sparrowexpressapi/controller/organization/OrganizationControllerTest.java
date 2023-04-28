@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationRequestDto;
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationResponseDto;
 import io.jonathanlee.sparrowexpressapi.service.organization.OrganizationService;
 import io.jonathanlee.sparrowexpressapi.util.profile.ActiveProfileService;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,6 +108,50 @@ class OrganizationControllerTest {
 
     // Verify
     assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+  }
+
+  @Test
+  void testCreateOrganizationWithValidData() {
+    OAuth2AuthenticationToken mockToken = mock(OAuth2AuthenticationToken.class);
+    OAuth2AuthenticationToken auth2AuthenticationToken = createOAuth2AuthenticationToken("user@example.com");
+    when(mockToken.getPrincipal()).thenReturn(auth2AuthenticationToken.getPrincipal());
+
+    OrganizationRequestDto organizationRequestDto = new OrganizationRequestDto();
+    organizationRequestDto.setName("My Organization");
+
+    OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
+    organizationResponseDto.setHttpStatus(HttpStatus.CREATED);
+    organizationResponseDto.setId("123");
+    when(organizationService.createOrganization("user@example.com", organizationRequestDto)).thenReturn(Optional.of(organizationResponseDto));
+
+    ResponseEntity<OrganizationResponseDto> response = organizationController.createOrganization(mockToken, organizationRequestDto);
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    assertEquals("123", Objects.requireNonNull(response.getBody()).getId());
+  }
+
+  @Test
+  void testCreateOrganizationWithInvalidData() {
+    OAuth2AuthenticationToken mockToken = mock(OAuth2AuthenticationToken.class);
+    OAuth2AuthenticationToken auth2AuthenticationToken = createOAuth2AuthenticationToken("user@example.com");
+    when(mockToken.getPrincipal()).thenReturn(auth2AuthenticationToken.getPrincipal());
+
+    OrganizationRequestDto organizationRequestDto = new OrganizationRequestDto();
+
+    when(organizationService.createOrganization("user@example.com", organizationRequestDto)).thenReturn(Optional.empty());
+
+    ResponseEntity<OrganizationResponseDto> response = organizationController.createOrganization(mockToken, organizationRequestDto);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void testCreateOrganizationWithUnauthenticatedUser() {
+    OAuth2AuthenticationToken mockToken = mock(OAuth2AuthenticationToken.class);
+
+    OrganizationRequestDto organizationRequestDto = new OrganizationRequestDto();
+    organizationRequestDto.setName("My Organization");
+
+    ResponseEntity<OrganizationResponseDto> response = organizationController.createOrganization(mockToken, organizationRequestDto);
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
   }
 
 }
