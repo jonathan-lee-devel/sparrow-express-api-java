@@ -2,14 +2,15 @@ package io.jonathanlee.sparrowexpressapi.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.constraints.Email;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class EmptyEmailListValidator implements ConstraintValidator<EmptyEmailList, List<String>> {
 
-  private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+  private static final String EMAIL_REGEX = "^([a-zA-Z0-9_\\-]+)@([a-zA-Z0-9_\\-]+)\\.([a-zA-Z]{2,5})$";
+
+  private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
+
 
   @Override
   public boolean isValid(List<String> emailList, ConstraintValidatorContext context) {
@@ -27,6 +28,7 @@ public class EmptyEmailListValidator implements ConstraintValidator<EmptyEmailLi
   }
 
   private boolean isValidEmail(String email) {
-    return this.validator.validate(email, Email.class).isEmpty();
+    return email != null && EMAIL_PATTERN.matcher(email).matches();
   }
+
 }
