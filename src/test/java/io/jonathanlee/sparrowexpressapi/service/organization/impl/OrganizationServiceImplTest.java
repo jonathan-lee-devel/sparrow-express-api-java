@@ -2,6 +2,7 @@ package io.jonathanlee.sparrowexpressapi.service.organization.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationRequestDto;
@@ -46,8 +47,8 @@ class OrganizationServiceImplTest {
     expectedResponse.setHttpStatus(HttpStatus.OK);
     when(organizationMapper.organizationModelToOrganizationResponseDto(organizationModel)).thenReturn(expectedResponse);
     Optional<OrganizationResponseDto> actualResponse = organizationService.getOrganizationById(requestingUserEmail, organizationId);
-    actualResponse.ifPresent(
-        organizationResponseDto -> assertEquals(expectedResponse, organizationResponseDto));
+    assertTrue(actualResponse.isPresent());
+    assertEquals(expectedResponse, actualResponse.get());
   }
 
   @Test
@@ -61,8 +62,8 @@ class OrganizationServiceImplTest {
     OrganizationResponseDto expectedResponse = new OrganizationResponseDto();
     expectedResponse.setHttpStatus(HttpStatus.FORBIDDEN);
     Optional<OrganizationResponseDto> actualResponse = organizationService.getOrganizationById(requestingUserEmail, organizationId);
-    actualResponse.ifPresent(
-        organizationResponseDto -> assertEquals(expectedResponse, organizationResponseDto));
+    assertTrue(actualResponse.isPresent());
+    assertEquals(expectedResponse, actualResponse.get());
   }
 
   @Test
@@ -90,8 +91,8 @@ class OrganizationServiceImplTest {
     expectedResponse.setHttpStatus(HttpStatus.CREATED);
     when(organizationMapper.organizationModelToOrganizationResponseDto(organizationModel)).thenReturn(expectedResponse);
     Optional<OrganizationResponseDto> actualResponse = organizationService.createOrganization(requestingUserEmail, organizationRequestDto);
-    actualResponse.ifPresent(
-        organizationResponseDto -> assertEquals(expectedResponse, organizationResponseDto));
+    assertTrue(actualResponse.isPresent());
+    assertEquals(expectedResponse, actualResponse.get());
   }
 
 }

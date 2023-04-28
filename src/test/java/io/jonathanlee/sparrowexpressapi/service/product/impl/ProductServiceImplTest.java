@@ -1,21 +1,24 @@
 package io.jonathanlee.sparrowexpressapi.service.product.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import io.jonathanlee.sparrowexpressapi.dto.product.ProductRequestDto;
 import io.jonathanlee.sparrowexpressapi.dto.product.ProductResponseDto;
 import io.jonathanlee.sparrowexpressapi.mapper.product.ProductMapper;
 import io.jonathanlee.sparrowexpressapi.model.product.ProductModel;
 import io.jonathanlee.sparrowexpressapi.repository.product.ProductRepository;
 import io.jonathanlee.sparrowexpressapi.service.random.RandomService;
+import java.math.BigDecimal;
+import java.util.Optional;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.math.BigDecimal;
-import java.util.Optional;
 
 class ProductServiceImplTest {
 
@@ -37,6 +40,16 @@ class ProductServiceImplTest {
   }
 
   @Test
+  void testGetProductByIdNotFound() {
+    String productId = "test-id";
+    when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+    Optional<ProductResponseDto> result = productService.getProductById(productId);
+
+    assertFalse(result.isPresent());
+  }
+
+  @Test
   void testGetProductById() {
     // Setup mock repository to return a ProductModel with ID "test-id"
     ProductModel productModel = new ProductModel();
@@ -50,9 +63,9 @@ class ProductServiceImplTest {
 
     // Test the getProductById method
     Optional<ProductResponseDto> optionalProductResponseDto = productService.getProductById("test-id");
-    Assertions.assertTrue(optionalProductResponseDto.isPresent());
+    assertTrue(optionalProductResponseDto.isPresent());
     ProductResponseDto actualProductResponseDto = optionalProductResponseDto.get();
-    Assertions.assertEquals("test-id", actualProductResponseDto.getId());
+    assertEquals("test-id", actualProductResponseDto.getId());
   }
 
   @Test
@@ -75,7 +88,7 @@ class ProductServiceImplTest {
     productRequestDto.setTitle("test-title");
     productRequestDto.setPrice(new BigDecimal("10.99"));
     Optional<ProductResponseDto> optionalProductResponseDto = productService.createProduct("test-email", productRequestDto);
-    Assertions.assertTrue(optionalProductResponseDto.isPresent());
+    assertTrue(optionalProductResponseDto.isPresent());
   }
 
 }
