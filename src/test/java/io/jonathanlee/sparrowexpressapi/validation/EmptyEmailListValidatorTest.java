@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import jakarta.validation.ConstraintValidatorContext;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,16 @@ class EmptyEmailListValidatorTest {
   @Test
   void testNullEmailList() {
     boolean isValid = validator.isValid(null, mock(ConstraintValidatorContext.class));
+
+    assertFalse(isValid);
+  }
+
+  @Test
+  void testEmailListContainsNull() {
+    List<String> list = new ArrayList<>();
+    list.add("john@example.com");
+    list.add(null);
+    boolean isValid = validator.isValid(list, mock(ConstraintValidatorContext.class));
 
     assertFalse(isValid);
   }
