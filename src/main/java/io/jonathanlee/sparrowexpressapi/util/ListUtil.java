@@ -1,14 +1,15 @@
 package io.jonathanlee.sparrowexpressapi.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public interface ListUtil {
 
   static <E> List<E> removeDuplicatesFromList(List<E> list) {
-    List<E> listWithoutDuplicates = new ArrayList<>();
-    list.parallelStream().distinct().forEach(listWithoutDuplicates::add);
-    return listWithoutDuplicates;
+    Set<E> set = new HashSet<>(list);
+    return new ArrayList<>(set);
   }
 
 }
