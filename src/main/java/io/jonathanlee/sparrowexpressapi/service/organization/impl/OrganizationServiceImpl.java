@@ -2,6 +2,7 @@ package io.jonathanlee.sparrowexpressapi.service.organization.impl;
 
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationRequestDto;
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationResponseDto;
+import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationSnippetResponseDto;
 import io.jonathanlee.sparrowexpressapi.mapper.organization.OrganizationMapper;
 import io.jonathanlee.sparrowexpressapi.model.organization.OrganizationModel;
 import io.jonathanlee.sparrowexpressapi.repository.organization.OrganizationRepository;
@@ -40,6 +41,19 @@ public class OrganizationServiceImpl implements OrganizationService {
     organizationResponseDto.setHttpStatus(HttpStatus.OK);
     return Optional.of(organizationResponseDto);
   }
+
+  @Override
+  public Optional<OrganizationSnippetResponseDto> getOrganizationSnippetById(String organizationId) {
+    Optional<OrganizationModel> organizationModelOptional = this.organizationRepository.findById(organizationId);
+    if (organizationModelOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    OrganizationModel organizationModel = organizationModelOptional.get();
+    OrganizationSnippetResponseDto organizationSnippetResponseDto = this.organizationMapper.organizationModelToOrganizationSnippetResponseDto(organizationModel);
+    organizationSnippetResponseDto.setHttpStatus(HttpStatus.OK);
+    return Optional.of(organizationSnippetResponseDto);
+  }
+
 
   @Override
   public Optional<OrganizationResponseDto> createOrganization(String requestingUserEmail, OrganizationRequestDto organizationRequestDto) {
