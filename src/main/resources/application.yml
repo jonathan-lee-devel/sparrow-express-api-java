@@ -20,3 +20,7 @@ spring:
           auth: true
           starttls:
             enable: true
+sparrow:
+  environment:
+    frontEndHost: http://localhost:4200
+    googleLoginHost: https://accounts.google.com
