@@ -13,6 +13,4 @@ public interface OrganizationService {
 
   Optional<OrganizationResponseDto> createOrganization(String requestingUserEmail, OrganizationRequestDto organizationRequestDto);
 
-  Optional<OrganizationResponseDto> updateOrganization(String requestingUserEmail, String organizationId, OrganizationRequestDto organizationRequestDto);
-
 }

@@ -72,29 +72,6 @@ public class OrganizationServiceImpl implements OrganizationService {
     return Optional.of(organizationResponseDto);
   }
 
-  @Override
-  public Optional<OrganizationResponseDto> updateOrganization(
-      String requestingUserEmail,
-      String organizationId,
-      OrganizationRequestDto organizationRequestDto
-  ) {
-    Optional<OrganizationModel> organizationModelOptional = this.organizationRepository.findById(organizationId);
-    if (organizationModelOptional.isEmpty()) {
-      return Optional.empty();
-    }
-    OrganizationModel organizationModel = organizationModelOptional.get();
-    OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
-    if (isOrganizationAdministrator(organizationModel, requestingUserEmail)) {
-      organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
-      return Optional.of(organizationResponseDto);
-    }
-    organizationModel.setName(organizationRequestDto.getName());
-    organizationModel.setAdministratorEmails(ListUtil.removeDuplicatesFromList(organizationModel.getAdministratorEmails()));
-    organizationModel.setMemberEmails(ListUtil.removeDuplicatesFromList(organizationModel.getMemberEmails()));
-    organizationResponseDto.setHttpStatus(HttpStatus.NO_CONTENT);
-    return Optional.of(organizationResponseDto);
-  }
-
   private boolean isOrganizationAdministrator(OrganizationModel organizationModel, String requestingUserEmail) {
     return organizationModel.getAdministratorEmails().contains(requestingUserEmail);
   }
