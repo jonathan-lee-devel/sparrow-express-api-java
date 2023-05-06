@@ -33,7 +33,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
     OrganizationModel organizationModel = organizationModelOptional.get();
     OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
-    if (!isOrganizationAdministrator(organizationModel, requestingUserEmail) && !isOrganizationMember(organizationModel, requestingUserEmail)) {
+    if (isNotOrganizationAdministrator(organizationModel, requestingUserEmail) && !isOrganizationMember(organizationModel, requestingUserEmail)) {
       organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
       return Optional.of(organizationResponseDto);
     }
@@ -72,8 +72,88 @@ public class OrganizationServiceImpl implements OrganizationService {
     return Optional.of(organizationResponseDto);
   }
 
-  private boolean isOrganizationAdministrator(OrganizationModel organizationModel, String requestingUserEmail) {
-    return organizationModel.getAdministratorEmails().contains(requestingUserEmail);
+  @Override
+  public Optional<OrganizationResponseDto> removeOrganizationAdministrator(
+      String requestingUserEmail, String organizationId, String administratorEmailToRemove) {
+    Optional<OrganizationModel> organizationModelOptional = this.organizationRepository.findById(organizationId);
+    if (organizationModelOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    OrganizationModel organizationModel = organizationModelOptional.get();
+    OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
+    if (isNotOrganizationAdministrator(organizationModel, requestingUserEmail)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
+      return Optional.of(organizationResponseDto);
+    }
+    if (!organizationModel.getAdministratorEmails().contains(administratorEmailToRemove)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
+      return Optional.of(organizationResponseDto);
+    }
+    organizationModel.getAdministratorEmails().remove(administratorEmailToRemove);
+    organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
+        this.organizationRepository.save(organizationModel)
+    );
+    organizationResponseDto.setHttpStatus(HttpStatus.OK);
+    return Optional.of(organizationResponseDto);
+  }
+
+  @Override
+  public Optional<OrganizationResponseDto> removeOrganizationMember(
+      String requestingUserEmail, String organizationId, String memberEmailToRemove) {
+    Optional<OrganizationModel> organizationModelOptional = this.organizationRepository.findById(organizationId);
+    if (organizationModelOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    OrganizationModel organizationModel = organizationModelOptional.get();
+    OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
+    if (isNotOrganizationAdministrator(organizationModel, requestingUserEmail)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
+      return Optional.of(organizationResponseDto);
+    }
+    if (!organizationModel.getMemberEmails().contains(memberEmailToRemove)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
+      return Optional.of(organizationResponseDto);
+    }
+    organizationModel.getMemberEmails().remove(memberEmailToRemove);
+    organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
+        this.organizationRepository.save(organizationModel)
+    );
+    organizationResponseDto.setHttpStatus(HttpStatus.OK);
+    return Optional.of(organizationResponseDto);
+  }
+
+  @Override
+  public Optional<OrganizationResponseDto> updateOrganizationAdministratorToJoinAsMember(
+      String requestingUserEmail, String organizationId, String administratorEmailToAddAsMember) {
+    Optional<OrganizationModel> organizationModelOptional = this.organizationRepository.findById(organizationId);
+    if (organizationModelOptional.isEmpty()) {
+      return Optional.empty();
+    }
+    OrganizationModel organizationModel = organizationModelOptional.get();
+    OrganizationResponseDto organizationResponseDto = new OrganizationResponseDto();
+    if (isNotOrganizationAdministrator(organizationModel, requestingUserEmail)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.FORBIDDEN);
+      return Optional.of(organizationResponseDto);
+    }
+    if (organizationModel.getMemberEmails().contains(administratorEmailToAddAsMember)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
+      return Optional.of(organizationResponseDto);
+    }
+    if (isNotOrganizationAdministrator(organizationModel, administratorEmailToAddAsMember)) {
+      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
+      return Optional.of(organizationResponseDto);
+    }
+    organizationModel.getMemberEmails().add(administratorEmailToAddAsMember);
+    organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
+        this.organizationRepository.save(organizationModel)
+    );
+    organizationResponseDto.setHttpStatus(HttpStatus.OK);
+    return Optional.of(organizationResponseDto);
+  }
+
+
+  private boolean isNotOrganizationAdministrator(OrganizationModel organizationModel, String requestingUserEmail) {
+    return !organizationModel.getAdministratorEmails().contains(requestingUserEmail);
   }
 
   private boolean isOrganizationMember(OrganizationModel organizationModel, String requestingUserEmail) {

@@ -13,4 +13,10 @@ public interface OrganizationService {
 
   Optional<OrganizationResponseDto> createOrganization(String requestingUserEmail, OrganizationRequestDto organizationRequestDto);
 
+  Optional<OrganizationResponseDto> removeOrganizationAdministrator(String requestingUserEmail, String organizationId, String administratorEmailToRemove);
+
+  Optional<OrganizationResponseDto> removeOrganizationMember(String requestingUserEmail, String organizationId, String memberEmailToRemove);
+
+  Optional<OrganizationResponseDto> updateOrganizationAdministratorToJoinAsMember(String requestingUserEmail, String organizationId, String administratorEmailToAddAsMember);
+
 }
