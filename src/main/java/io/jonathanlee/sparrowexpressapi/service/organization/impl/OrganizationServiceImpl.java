@@ -3,6 +3,7 @@ package io.jonathanlee.sparrowexpressapi.service.organization.impl;
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationRequestDto;
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationResponseDto;
 import io.jonathanlee.sparrowexpressapi.dto.organization.OrganizationSnippetResponseDto;
+import io.jonathanlee.sparrowexpressapi.exception.BadRequestException;
 import io.jonathanlee.sparrowexpressapi.mapper.organization.OrganizationMapper;
 import io.jonathanlee.sparrowexpressapi.model.organization.OrganizationModel;
 import io.jonathanlee.sparrowexpressapi.repository.organization.OrganizationRepository;
@@ -86,8 +87,7 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     if (!organizationModel.getAdministratorEmails().contains(administratorEmailToRemove)) {
-      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
-      return Optional.of(organizationResponseDto);
+      throw new BadRequestException("administratorEmails", String.format("%s is not an administrator of organization with ID: %s", administratorEmailToRemove, organizationId));
     }
     organizationModel.getAdministratorEmails().remove(administratorEmailToRemove);
     organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
@@ -111,8 +111,7 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     if (!organizationModel.getMemberEmails().contains(memberEmailToRemove)) {
-      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
-      return Optional.of(organizationResponseDto);
+      throw new BadRequestException("memberEmailToRemove", String.format("%s is not a member of organization with ID: %s", memberEmailToRemove, organizationId));
     }
     organizationModel.getMemberEmails().remove(memberEmailToRemove);
     organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
@@ -136,12 +135,10 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     if (organizationModel.getMemberEmails().contains(administratorEmailToAddAsMember)) {
-      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
-      return Optional.of(organizationResponseDto);
+      throw new BadRequestException("administratorEmailToAddAsMember", String.format("%s is already a member of organization with ID: %s", administratorEmailToAddAsMember, organizationId));
     }
     if (isNotOrganizationAdministrator(organizationModel, administratorEmailToAddAsMember)) {
-      organizationResponseDto.setHttpStatus(HttpStatus.BAD_REQUEST);
-      return Optional.of(organizationResponseDto);
+      throw new BadRequestException("administratorEmailToAddAsMember", String.format("%s is not an administrator of organization with ID: %s", administratorEmailToAddAsMember, organizationId));
     }
     organizationModel.getMemberEmails().add(administratorEmailToAddAsMember);
     organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
