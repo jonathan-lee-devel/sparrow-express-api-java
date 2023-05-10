@@ -20,6 +20,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
 
+  private static final String ADMINISTRATOR_EMAILS = "Administrator E-mails";
+
+  private static final String MEMBER_EMAIL_TO_REMOVE = "Member E-mail to Remove";
+
+  private static final String ADMINISTRATOR_EMAIL_TO_ADD_AS_MEMBER = "Administrator E-mail to Add as Member";
+
   private final OrganizationRepository organizationRepository;
 
   private final OrganizationMapper organizationMapper;
@@ -87,7 +93,7 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     if (!organizationModel.getAdministratorEmails().contains(administratorEmailToRemove)) {
-      throw new BadRequestException("administratorEmails", String.format("%s is not an administrator of organization with ID: %s", administratorEmailToRemove, organizationId));
+      throw new BadRequestException(ADMINISTRATOR_EMAILS, String.format("%s is not an administrator of organization with ID: %s", administratorEmailToRemove, organizationId));
     }
     organizationModel.getAdministratorEmails().remove(administratorEmailToRemove);
     organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
@@ -111,7 +117,7 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     if (!organizationModel.getMemberEmails().contains(memberEmailToRemove)) {
-      throw new BadRequestException("memberEmailToRemove", String.format("%s is not a member of organization with ID: %s", memberEmailToRemove, organizationId));
+      throw new BadRequestException(MEMBER_EMAIL_TO_REMOVE, String.format("%s is not a member of organization with ID: %s", memberEmailToRemove, organizationId));
     }
     organizationModel.getMemberEmails().remove(memberEmailToRemove);
     organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
@@ -135,10 +141,10 @@ public class OrganizationServiceImpl implements OrganizationService {
       return Optional.of(organizationResponseDto);
     }
     if (organizationModel.getMemberEmails().contains(administratorEmailToAddAsMember)) {
-      throw new BadRequestException("administratorEmailToAddAsMember", String.format("%s is already a member of organization with ID: %s", administratorEmailToAddAsMember, organizationId));
+      throw new BadRequestException(ADMINISTRATOR_EMAIL_TO_ADD_AS_MEMBER, String.format("%s is already a member of organization with ID: %s", administratorEmailToAddAsMember, organizationId));
     }
     if (isNotOrganizationAdministrator(organizationModel, administratorEmailToAddAsMember)) {
-      throw new BadRequestException("administratorEmailToAddAsMember", String.format("%s is not an administrator of organization with ID: %s", administratorEmailToAddAsMember, organizationId));
+      throw new BadRequestException(ADMINISTRATOR_EMAIL_TO_ADD_AS_MEMBER, String.format("%s is not an administrator of organization with ID: %s", administratorEmailToAddAsMember, organizationId));
     }
     organizationModel.getMemberEmails().add(administratorEmailToAddAsMember);
     organizationResponseDto = this.organizationMapper.organizationModelToOrganizationResponseDto(
